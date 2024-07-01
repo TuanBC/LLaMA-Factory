@@ -45,10 +45,6 @@ class DataArguments:
         default=1024,
         metadata={"help": "The cutoff length of the tokenized inputs in the dataset."},
     )
-    reserved_label_len: int = field(
-        default=1,
-        metadata={"help": "The minimum cutoff length reserved for the tokenized labels in the dataset."},
-    )
     train_on_prompt: bool = field(
         default=False,
         metadata={"help": "Whether to disable the mask on the prompt or not."},
@@ -101,15 +97,16 @@ class DataArguments:
             "help": "Whether or not to pack the sequences in training. Will automatically enable in pre-training."
         },
     )
+    tool_format: Optional[str] = field(
+        default=None,
+        metadata={"help": "Tool format to use for constructing function calling examples."},
+    )
     tokenized_path: Optional[str] = field(
         default=None,
         metadata={"help": "Path to save or load the tokenized datasets."},
     )
 
     def __post_init__(self):
-        if self.reserved_label_len >= self.cutoff_len:
-            raise ValueError("`reserved_label_len` must be smaller than `cutoff_len`.")
-
         if self.streaming and self.val_size > 1e-6 and self.val_size < 1:
             raise ValueError("Streaming mode should have an integer val size.")
 
